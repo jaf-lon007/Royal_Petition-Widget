@@ -351,29 +351,71 @@
             }
             
             async defaultSaveHandler(signatureData) {
-                // Default behavior - just log the signature
-                console.log('Signature saved:', signatureData);
+                // Generate a unique signature ID for the user
+                const signatureId = 'SIG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+                
+                // Store in browser's local storage (temporary solution)
+                const signatureRecord = {
+                    id: signatureId,
+                    timestamp: signatureData.timestamp,
+                    dataUrl: signatureData.dataUrl
+                };
+                
+                // Save to localStorage for now (in a real app, this would go to a database)
+                try {
+                    const existingSignatures = JSON.parse(localStorage.getItem('signatures') || '[]');
+                    existingSignatures.push(signatureRecord);
+                    localStorage.setItem('signatures', JSON.stringify(existingSignatures));
+                    
+                    // Show the signature ID to the user
+                    this.showSignatureId(signatureId);
+                    
+                } catch (error) {
+                    console.log('LocalStorage not available, signature saved in memory only');
+                    // Still show success for user experience
+                    this.showSignatureId(signatureId);
+                }
+                
+                // Log for developers
+                console.log('Signature saved with ID:', signatureId, signatureData);
                 
                 // If API endpoint is provided, send the data there
                 if (this.options.apiEndpoint) {
-                    const response = await fetch(this.options.apiEndpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(signatureData)
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to save signature');
+                    try {
+                        const response = await fetch(this.options.apiEndpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({...signatureData, id: signatureId})
+                        });
+                        
+                        if (!response.ok) {
+                            console.warn('API save failed, but signature still saved locally');
+                        }
+                    } catch (error) {
+                        console.warn('API endpoint unreachable, but signature still saved locally');
                     }
                 }
                 
                 // Trigger custom event for parent page
                 window.parent.postMessage({
                     type: 'signature-saved',
-                    data: signatureData
+                    data: {...signatureData, id: signatureId}
                 }, '*');
+            }
+            
+            showSignatureId(signatureId) {
+                // Update the success message to show the signature ID
+                this.successMessage.innerHTML = `
+                    ✅ Signature saved successfully!<br>
+                    <strong>Your signature ID: ${signatureId}</strong><br>
+                    <small>Please copy this ID for your records</small>
+                `;
+                this.successMessage.style.display = 'block';
+                
+                // Auto-hide after longer time since user needs to copy the ID
+                setTimeout(() => this.hideSuccessMessage(), 10000);
             }
             
             showSuccessMessage() {

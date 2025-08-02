@@ -3,54 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signature Widget</title>
+    <title>Petition - Royal's Should Respect Residents</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emailjs/2.6.4/email.min.js"></script>
     <style>
-        /* Widget Styles - Designed to be embeddable */
-        .signature-widget {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 500px;
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .petition-container {
+            max-width: 800px;
             margin: 0 auto;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
             background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             overflow: hidden;
         }
 
-        .widget-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .petition-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            padding: 15px 20px;
+            padding: 40px 30px;
             text-align: center;
         }
 
-        .widget-title {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
+        .petition-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .widget-subtitle {
-            margin: 5px 0 0 0;
-            font-size: 14px;
-            opacity: 0.9;
+        .petition-subtitle {
+            font-size: 18px;
+            font-style: italic;
+            opacity: 0.95;
+            margin: 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .petition-content {
+            padding: 40px 30px;
+        }
+
+        .petition-form {
+            display: grid;
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .signature-section {
+            background: #f8f9fb;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px dashed #d1d9e6;
         }
 
         .signature-container {
             position: relative;
-            background: #fafafa;
-            border: 2px dashed #ddd;
-            margin: 20px;
-            border-radius: 8px;
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
             overflow: hidden;
+            margin: 15px 0;
         }
 
         .signature-canvas {
             width: 100%;
             height: 200px;
             display: block;
-            background: white;
             cursor: crosshair;
         }
 
@@ -59,159 +126,275 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #999;
-            font-size: 16px;
+            color: #94a3b8;
+            font-size: 18px;
             pointer-events: none;
             transition: opacity 0.3s ease;
+            text-align: center;
         }
 
         .signature-placeholder.hidden {
             opacity: 0;
         }
 
-        .widget-controls {
-            padding: 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
+        .signature-controls {
             display: flex;
-            gap: 10px;
             justify-content: space-between;
             align-items: center;
+            margin-top: 15px;
         }
 
-        .control-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .widget-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-clear {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-clear:hover {
-            background: #c82333;
-        }
-
-        .btn-save {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-save:hover {
-            background: #218838;
-        }
-
-        .btn-save:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-
-        .widget-status {
-            font-size: 12px;
-            color: #6c757d;
+        .signature-status {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
         }
 
-        .status-indicator {
-            width: 8px;
-            height: 8px;
+        .status-dot {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: #dc3545;
+            background: #ef4444;
             transition: background-color 0.3s ease;
         }
 
-        .status-indicator.signed {
-            background: #28a745;
+        .status-dot.signed {
+            background: #22c55e;
         }
 
-        /* Success Message */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 18px;
+            padding: 16px 32px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px 20px;
-            margin: 0;
-            border-left: 4px solid #28a745;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
             display: none;
+            text-align: center;
         }
 
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            .signature-widget {
-                margin: 10px;
-                border-radius: 8px;
+        .success-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
             }
             
-            .widget-controls {
-                flex-direction: column;
-                gap: 15px;
+            .petition-header {
+                padding: 30px 20px;
             }
             
-            .control-group {
-                width: 100%;
-                justify-content: center;
+            .petition-title {
+                font-size: 26px;
             }
+            
+            .petition-subtitle {
+                font-size: 16px;
+            }
+            
+            .petition-content {
+                padding: 30px 20px;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .date-field {
+            background: #f8f9fb;
+            color: #64748b;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #1e40af;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="signature-widget" id="signatureWidget">
-        <div class="widget-header">
-            <h3 class="widget-title">Digital Signature</h3>
-            <p class="widget-subtitle">Sign below using your mouse, finger, or stylus</p>
+    <div class="petition-container">
+        <div class="petition-header">
+            <h1 class="petition-title">Petition - Royal's Should Respect Residents</h1>
+            <p class="petition-subtitle">
+                This petition is supported by residents from Hermitage Court and other nearby properties in Wapping who are affected by the ongoing disruption, fumes, noise and safety concerns caused by Royal Dry Cleaners' operations.
+            </p>
         </div>
-        
-        <div class="signature-container">
-            <canvas class="signature-canvas" id="signatureCanvas"></canvas>
-            <div class="signature-placeholder" id="placeholder">
-                ✍️ Click here to start signing
+
+        <div class="petition-content">
+            <div class="info-box">
+                <p><strong>📧 How it works:</strong> When you sign this petition, your signature and details will be automatically emailed to the petition organizer for compilation and submission to the relevant authorities.</p>
             </div>
-        </div>
-        
-        <div class="widget-controls">
-            <div class="widget-status">
-                <div class="status-indicator" id="statusIndicator"></div>
-                <span id="statusText">Not signed</span>
-            </div>
-            
-            <div class="control-group">
-                <button class="widget-btn btn-clear" onclick="clearSignature()">
-                    Clear
+
+            <form class="petition-form" id="petitionForm">
+                <div class="form-group">
+                    <label class="form-label" for="fullName">Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" name="fullName" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="residentType">Resident Type <span class="required">*</span></label>
+                    <select id="residentType" name="residentType" class="form-select" required>
+                        <option value="">Please select...</option>
+                        <option value="hermitage-resident-freeholder">Hermitage Court - Resident (Share-of-Freeholder)</option>
+                        <option value="hermitage-nonresident-freeholder">Hermitage Court - Non-Resident (Share-of-Freeholder)</option>
+                        <option value="hermitage-tenant">Hermitage Court - Tenant</option>
+                        <option value="hermitage-other">Hermitage Court - Other Resident</option>
+                        <option value="hermitage-commercial">Hermitage Court - Commercial Leaseholder</option>
+                        <option value="local-resident">Local Resident (Neighbour)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="address">Address <span class="required">*</span></label>
+                    <textarea id="address" name="address" class="form-textarea" rows="3" required placeholder="Please enter your full address"></textarea>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="householdSize">Number of people in household (if a resident)</label>
+                        <select id="householdSize" name="householdSize" class="form-select">
+                            <option value="">Not Applicable</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5+">5+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="signature-section">
+                    <label class="form-label">Digital Signature <span class="required">*</span></label>
+                    <p style="margin: 5px 0 15px 0; color: #64748b; font-size: 14px;">
+                        Please sign below using your mouse, finger, or stylus
+                    </p>
+                    
+                    <div class="signature-container">
+                        <canvas class="signature-canvas" id="signatureCanvas"></canvas>
+                        <div class="signature-placeholder" id="signaturePlaceholder">
+                            ✍️ Click here to start signing
+                        </div>
+                    </div>
+
+                    <div class="signature-controls">
+                        <div class="signature-status">
+                            <div class="status-dot" id="statusDot"></div>
+                            <span id="statusText">Not signed</span>
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="clearSignature()">
+                            Clear Signature
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="dateSign">Date Signed</label>
+                    <input type="text" id="dateSign" name="dateSign" class="form-input date-field" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="comments">Any Comments or Specific Concerns?</label>
+                    <textarea id="comments" name="comments" class="form-textarea" rows="4" placeholder="Please share any specific concerns or comments about the issues with Royal Dry Cleaners..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Sign Petition
                 </button>
-                <button class="widget-btn btn-save" onclick="saveSignature()" id="saveBtn" disabled>
-                    Save Signature
-                </button>
+            </form>
+
+            <div class="success-message" id="successMessage">
+                <div class="success-title">Thank You for Signing!</div>
+                <p>Your petition signature has been successfully submitted and emailed to the organizer.</p>
             </div>
-        </div>
-        
-        <div class="success-message" id="successMessage">
-            ✅ Signature saved successfully!
         </div>
     </div>
 
     <script>
         let signaturePad;
         
-        function initializeWidget() {
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSignature();
+            initializeForm();
+            setTodaysDate();
+        });
+
+        function initializeSignature() {
             const canvas = document.getElementById('signatureCanvas');
-            const placeholder = document.getElementById('placeholder');
-            const statusIndicator = document.getElementById('statusIndicator');
+            const placeholder = document.getElementById('signaturePlaceholder');
+            const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
-            const saveBtn = document.getElementById('saveBtn');
-            const successMessage = document.getElementById('successMessage');
-            
+
             // Initialize signature pad
             signaturePad = new SignaturePad(canvas, {
                 backgroundColor: 'rgba(255, 255, 255, 0)',
@@ -222,7 +405,7 @@
                 throttle: 16,
                 minPointDistance: 3,
             });
-            
+
             // Resize canvas
             function resizeCanvas() {
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
@@ -231,87 +414,140 @@
                 canvas.height = rect.height * ratio;
                 canvas.getContext('2d').scale(ratio, ratio);
                 signaturePad.clear();
-                updateStatus();
+                updateSignatureStatus();
             }
-            
-            // Update status
-            function updateStatus() {
+
+            // Update signature status
+            function updateSignatureStatus() {
                 const isEmpty = signaturePad.isEmpty();
                 
                 if (isEmpty) {
-                    statusIndicator.classList.remove('signed');
+                    statusDot.classList.remove('signed');
                     statusText.textContent = 'Not signed';
-                    saveBtn.disabled = true;
                     placeholder.classList.remove('hidden');
                 } else {
-                    statusIndicator.classList.add('signed');
-                    statusText.textContent = 'Ready to save';
-                    saveBtn.disabled = false;
+                    statusDot.classList.add('signed');
+                    statusText.textContent = 'Signature ready';
+                    placeholder.classList.add('hidden');
                 }
             }
-            
+
             // Event listeners
-            signaturePad.addEventListener('beginStroke', () => {
-                placeholder.classList.add('hidden');
-                updateStatus();
-            });
-            
-            signaturePad.addEventListener('endStroke', () => {
-                updateStatus();
-            });
-            
+            signaturePad.addEventListener('beginStroke', updateSignatureStatus);
+            signaturePad.addEventListener('endStroke', updateSignatureStatus);
             window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
             
-            // Touch event prevention for mobile
+            // Touch events for mobile
             canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
             canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
             canvas.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+
+            resizeCanvas();
+        }
+
+        function clearSignature() {
+            signaturePad.clear();
+            document.getElementById('statusDot').classList.remove('signed');
+            document.getElementById('statusText').textContent = 'Not signed';
+            document.getElementById('signaturePlaceholder').classList.remove('hidden');
+        }
+
+        function setTodaysDate() {
+            document.getElementById('dateSign').value = new Date().toLocaleDateString('en-GB');
+        }
+
+        function initializeForm() {
+            const form = document.getElementById('petitionForm');
             
-            // Global functions
-            window.clearSignature = function() {
-                signaturePad.clear();
-                updateStatus();
-                successMessage.style.display = 'none';
-            };
-            
-            window.saveSignature = function() {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate signature
                 if (signaturePad.isEmpty()) {
-                    alert('Please provide a signature before saving.');
+                    alert('Please provide your signature before submitting the petition.');
                     return;
                 }
-                
-                // Generate signature ID
-                const signatureId = 'SIG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-                
-                // Show success immediately
-                successMessage.innerHTML = `
-                    ✅ Signature saved successfully!<br>
-                    <strong>Your signature ID: ${signatureId}</strong><br>
-                    <small>Please copy this ID for your petition form</small>
-                `;
+
+                // Get form data
+                const formData = {
+                    fullName: document.getElementById('fullName').value,
+                    residentType: document.getElementById('residentType').value,
+                    address: document.getElementById('address').value,
+                    email: document.getElementById('email').value,
+                    householdSize: document.getElementById('householdSize').value || 'Not Applicable',
+                    signature: signaturePad.toDataURL(),
+                    dateSign: document.getElementById('dateSign').value,
+                    comments: document.getElementById('comments').value,
+                    timestamp: new Date().toISOString()
+                };
+
+                submitPetition(formData);
+            });
+        }
+
+        function submitPetition(formData) {
+            const submitBtn = document.getElementById('submitBtn');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Update button state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Generate unique ID
+            const petitionId = 'PET-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+            
+            // Prepare email data
+            const emailData = {
+                petition_id: petitionId,
+                signer_name: formData.fullName,
+                resident_type: formData.residentType,
+                address: formData.address.replace(/\n/g, '<br>'),
+                email: formData.email,
+                household_size: formData.householdSize,
+                signature_image: formData.signature,
+                date_signed: formData.dateSign,
+                comments: formData.comments || 'No additional comments',
+                timestamp: new Date().toLocaleString('en-GB'),
+                to_email: 'your-email@example.com' // CHANGE THIS TO YOUR EMAIL
+            };
+
+            // Try to send email (replace with your EmailJS setup)
+            console.log('Petition Data:', emailData);
+            
+            // Simulate successful submission
+            setTimeout(() => {
+                // Show success message
                 successMessage.style.display = 'block';
+                successMessage.scrollIntoView({ behavior: 'smooth' });
                 
-                // Update button and status
-                saveBtn.textContent = 'Saved!';
-                saveBtn.disabled = true;
-                statusText.textContent = 'Signature saved';
+                // Reset form
+                document.getElementById('petitionForm').reset();
+                clearSignature();
+                setTodaysDate();
+                
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign Petition';
                 
                 // Log for debugging
-                console.log('Signature saved with ID:', signatureId);
-                console.log('Signature data:', signaturePad.toDataURL());
+                console.log('Petition signed successfully with ID:', petitionId);
                 
-                // Auto-hide success message after 10 seconds
-                setTimeout(() => {
-                    successMessage.style.display = 'none';
-                    saveBtn.textContent = 'Save Signature';
-                    saveBtn.disabled = false;
-                }, 10000);
-            };
+            }, 2000);
+
+            // TODO: Replace this with actual EmailJS implementation:
+            /*
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', emailData)
+                .then(function(response) {
+                    console.log('Email sent successfully:', response);
+                    showSuccess();
+                })
+                .catch(function(error) {
+                    console.error('Email send failed:', error);
+                    alert('There was an error submitting your petition. Please try again.');
+                    resetButton();
+                });
+            */
         }
-        
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initializeWidget);
     </script>
 </body>
 </html>

@@ -524,57 +524,62 @@
             // Generate unique ID
             const petitionId = 'PET-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
             
-            // Prepare email data
-            const emailData = {
-                petition_id: petitionId,
-                signer_name: formData.fullName,
-                resident_type: formData.residentType,
-                address: formData.address.replace(/\n/g, '<br>'),
+            // Prepare data for Google Apps Script
+            const petitionData = {
+                petitionId: petitionId,
+                fullName: formData.fullName,
+                residentType: formData.residentType,
+                address: formData.address,
                 email: formData.email,
-                household_size: formData.householdSize,
-                signature_image: formData.signature,
-                date_signed: formData.dateSign,
-                comments: formData.comments || 'No additional comments',
-                timestamp: new Date().toLocaleString('en-GB'),
-                to_email: 'jaflanneryLon@gmail.com'
+                householdSize: formData.householdSize,
+                signature: formData.signature,
+                dateSign: formData.dateSign,
+                comments: formData.comments || '',
+                timestamp: new Date().toLocaleString('en-GB')
             };
 
-            // Try to send email (replace with your EmailJS setup)
-            console.log('Petition Data:', emailData);
+            // Submit to Google Apps Script
+            // REPLACE 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual deployed script URL
+            const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
             
-            // Simulate successful submission
-            setTimeout(() => {
-                // Show success message
-                successMessage.style.display = 'block';
-                successMessage.scrollIntoView({ behavior: 'smooth' });
-                
-                // Reset form
-                document.getElementById('petitionForm').reset();
-                clearSignature();
-                setTodaysDate();
-                
+            fetch(scriptUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(petitionData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    successMessage.innerHTML = `
+                        <div class="success-title">Thank You for Signing!</div>
+                        <p>Your petition signature has been successfully submitted and emailed to the organizer.</p>
+                        <p><strong>Petition ID:</strong> ${petitionId}</p>
+                    `;
+                    successMessage.style.display = 'block';
+                    successMessage.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Reset form
+                    document.getElementById('petitionForm').reset();
+                    clearSignature();
+                    setTodaysDate();
+                    
+                    console.log('Petition signed successfully with ID:', petitionId);
+                } else {
+                    throw new Error(data.message || 'Submission failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error submitting your petition. Please try again or contact support.');
+            })
+            .finally(() => {
                 // Reset button
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Sign Petition';
-                
-                // Log for debugging
-                console.log('Petition signed successfully with ID:', petitionId);
-                
-            }, 2000);
-
-            // TODO: Replace this with actual EmailJS implementation:
-            /*
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', emailData)
-                .then(function(response) {
-                    console.log('Email sent successfully:', response);
-                    showSuccess();
-                })
-                .catch(function(error) {
-                    console.error('Email send failed:', error);
-                    alert('There was an error submitting your petition. Please try again.');
-                    resetButton();
-                });
-            */
+            });
         }
     </script>
 </body>

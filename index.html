@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Widget</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
+    <style>
+        /* Widget Styles - Designed to be embeddable */
+        .signature-widget {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .widget-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .widget-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .widget-subtitle {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .signature-container {
+            position: relative;
+            background: #fafafa;
+            border: 2px dashed #ddd;
+            margin: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .signature-canvas {
+            width: 100%;
+            height: 200px;
+            display: block;
+            background: white;
+            cursor: crosshair;
+        }
+
+        .signature-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #999;
+            font-size: 16px;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .signature-placeholder.hidden {
+            opacity: 0;
+        }
+
+        .widget-controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .widget-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-clear {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #c82333;
+        }
+
+        .btn-save {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #218838;
+        }
+
+        .btn-save:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .widget-status {
+            font-size: 12px;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #dc3545;
+            transition: background-color 0.3s ease;
+        }
+
+        .status-indicator.signed {
+            background: #28a745;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px 20px;
+            margin: 0;
+            border-left: 4px solid #28a745;
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .signature-widget {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .widget-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .control-group {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Integration styles for embedding */
+        .widget-embed {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .widget-minimal .widget-header {
+            display: none;
+        }
+
+        .widget-minimal .signature-container {
+            margin: 0;
+            border: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="signature-widget" id="signatureWidget">
+        <div class="widget-header">
+            <h3 class="widget-title">Digital Signature</h3>
+            <p class="widget-subtitle">Sign below using your mouse, finger, or stylus</p>
+        </div>
+        
+        <div class="signature-container">
+            <canvas class="signature-canvas" id="signatureCanvas"></canvas>
+            <div class="signature-placeholder" id="placeholder">
+                ✍️ Click here to start signing
+            </div>
+        </div>
+        
+        <div class="widget-controls">
+            <div class="widget-status">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">Not signed</span>
+            </div>
+            
+            <div class="control-group">
+                <button class="widget-btn btn-clear" onclick="clearSignature()">
+                    Clear
+                </button>
+                <button class="widget-btn btn-save" onclick="saveSignature()" id="saveBtn" disabled>
+                    Save Signature
+                </button>
+            </div>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            ✅ Signature saved successfully!
+        </div>
+    </div>
+
+    <script>
+        class SignatureWidget {
+            constructor(containerId, options = {}) {
+                this.container = document.getElementById(containerId);
+                this.canvas = document.getElementById('signatureCanvas');
+                this.placeholder = document.getElementById('placeholder');
+                this.statusIndicator = document.getElementById('statusIndicator');
+                this.statusText = document.getElementById('statusText');
+                this.saveBtn = document.getElementById('saveBtn');
+                this.successMessage = document.getElementById('successMessage');
+                
+                this.options = {
+                    penColor: options.penColor || 'rgb(0, 0, 0)',
+                    backgroundColor: options.backgroundColor || 'rgba(255, 255, 255, 0)',
+                    minWidth: options.minWidth || 0.5,
+                    maxWidth: options.maxWidth || 2.5,
+                    onSave: options.onSave || this.defaultSaveHandler,
+                    apiEndpoint: options.apiEndpoint || null,
+                    ...options
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupSignaturePad();
+                this.setupEventListeners();
+                this.resizeCanvas();
+                
+                // Apply theme if specified
+                if (this.options.minimal) {
+                    this.container.classList.add('widget-minimal');
+                }
+                
+                if (this.options.embed) {
+                    this.container.classList.add('widget-embed');
+                }
+            }
+            
+            setupSignaturePad() {
+                this.signaturePad = new SignaturePad(this.canvas, {
+                    backgroundColor: this.options.backgroundColor,
+                    penColor: this.options.penColor,
+                    velocityFilterWeight: 0.7,
+                    minWidth: this.options.minWidth,
+                    maxWidth: this.options.maxWidth,
+                    throttle: 16,
+                    minPointDistance: 3,
+                });
+                
+                // Handle signature events
+                this.signaturePad.addEventListener('beginStroke', () => {
+                    this.placeholder.classList.add('hidden');
+                    this.updateStatus();
+                });
+                
+                this.signaturePad.addEventListener('endStroke', () => {
+                    this.updateStatus();
+                });
+            }
+            
+            setupEventListeners() {
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // Prevent scrolling when signing on mobile
+                this.canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+                this.canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+                this.canvas.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+            }
+            
+            resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                const rect = this.canvas.getBoundingClientRect();
+                
+                this.canvas.width = rect.width * ratio;
+                this.canvas.height = rect.height * ratio;
+                this.canvas.getContext('2d').scale(ratio, ratio);
+                
+                this.signaturePad.clear();
+                this.updateStatus();
+            }
+            
+            updateStatus() {
+                const isEmpty = this.signaturePad.isEmpty();
+                
+                if (isEmpty) {
+                    this.statusIndicator.classList.remove('signed');
+                    this.statusText.textContent = 'Not signed';
+                    this.saveBtn.disabled = true;
+                    this.placeholder.classList.remove('hidden');
+                } else {
+                    this.statusIndicator.classList.add('signed');
+                    this.statusText.textContent = 'Ready to save';
+                    this.saveBtn.disabled = false;
+                }
+            }
+            
+            clear() {
+                this.signaturePad.clear();
+                this.updateStatus();
+                this.hideSuccessMessage();
+            }
+            
+            async save() {
+                if (this.signaturePad.isEmpty()) {
+                    alert('Please provide a signature before saving.');
+                    return;
+                }
+                
+                const signatureData = {
+                    dataUrl: this.signaturePad.toDataURL(),
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                };
+                
+                try {
+                    this.saveBtn.disabled = true;
+                    this.saveBtn.textContent = 'Saving...';
+                    
+                    await this.options.onSave(signatureData);
+                    
+                    this.showSuccessMessage();
+                    this.statusText.textContent = 'Signature saved';
+                    
+                } catch (error) {
+                    console.error('Error saving signature:', error);
+                    alert('Error saving signature. Please try again.');
+                } finally {
+                    this.saveBtn.disabled = false;
+                    this.saveBtn.textContent = 'Save Signature';
+                }
+            }
+            
+            async defaultSaveHandler(signatureData) {
+                // Default behavior - just log the signature
+                console.log('Signature saved:', signatureData);
+                
+                // If API endpoint is provided, send the data there
+                if (this.options.apiEndpoint) {
+                    const response = await fetch(this.options.apiEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(signatureData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to save signature');
+                    }
+                }
+                
+                // Trigger custom event for parent page
+                window.parent.postMessage({
+                    type: 'signature-saved',
+                    data: signatureData
+                }, '*');
+            }
+            
+            showSuccessMessage() {
+                this.successMessage.style.display = 'block';
+                setTimeout(() => this.hideSuccessMessage(), 3000);
+            }
+            
+            hideSuccessMessage() {
+                this.successMessage.style.display = 'none';
+            }
+            
+            // Public API methods
+            getSignature() {
+                return this.signaturePad.isEmpty() ? null : this.signaturePad.toDataURL();
+            }
+            
+            setSignature(dataUrl) {
+                this.signaturePad.fromDataURL(dataUrl);
+                this.updateStatus();
+            }
+            
+            isEmpty() {
+                return this.signaturePad.isEmpty();
+            }
+        }
+        
+        // Global functions for backward compatibility
+        function clearSignature() {
+            window.signatureWidget.clear();
+        }
+        
+        function saveSignature() {
+            window.signatureWidget.save();
+        }
+        
+        // Initialize the widget
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get configuration from URL parameters or data attributes
+            const urlParams = new URLSearchParams(window.location.search);
+            const widgetElement = document.getElementById('signatureWidget');
+            
+            const options = {
+                minimal: urlParams.get('minimal') === 'true' || widgetElement.dataset.minimal === 'true',
+                embed: urlParams.get('embed') === 'true' || widgetElement.dataset.embed === 'true',
+                penColor: urlParams.get('penColor') || widgetElement.dataset.penColor || 'rgb(0, 0, 0)',
+                apiEndpoint: urlParams.get('apiEndpoint') || widgetElement.dataset.apiEndpoint,
+                onSave: window.customSaveHandler || undefined
+            };
+            
+            window.signatureWidget = new SignatureWidget('signatureWidget', options);
+        });
+        
+        // Export for use in other contexts
+        if (typeof module !== 'undefined' && module.exports) {
+            module.exports = SignatureWidget;
+        }
+        
+        if (typeof window !== 'undefined') {
+            window.SignatureWidget = SignatureWidget;
+        }
+    </script>
+</body>
+</html>

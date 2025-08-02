@@ -438,10 +438,22 @@
             function resizeCanvas() {
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
                 const rect = canvas.getBoundingClientRect();
+                
+                // Save current signature data before resizing
+                const signatureData = signaturePad.toDataURL();
+                const wasEmpty = signaturePad.isEmpty();
+                
                 canvas.width = rect.width * ratio;
                 canvas.height = rect.height * ratio;
                 canvas.getContext('2d').scale(ratio, ratio);
-                signaturePad.clear();
+                
+                // Restore signature after resize if it wasn't empty
+                if (!wasEmpty) {
+                    signaturePad.fromDataURL(signatureData);
+                } else {
+                    signaturePad.clear();
+                }
+                
                 updateSignatureStatus();
             }
 
@@ -463,12 +475,34 @@
             // Event listeners
             signaturePad.addEventListener('beginStroke', updateSignatureStatus);
             signaturePad.addEventListener('endStroke', updateSignatureStatus);
-            window.addEventListener('resize', resizeCanvas);
             
-            // Touch events for mobile
-            canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+            // Debounced resize to prevent too many calls
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resizeCanvas, 250);
+            });
+            
+            // Prevent scrolling issues on mobile
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                // Store signature before potential layout changes
+                window.lastSignature = signaturePad.isEmpty() ? null : signaturePad.toDataURL();
+            }, { passive: false });
+            
             canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-            canvas.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                updateSignatureStatus();
+            }, { passive: false });
+            
+            // Handle visibility changes (when user switches tabs/apps)
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && window.lastSignature && signaturePad.isEmpty()) {
+                    signaturePad.fromDataURL(window.lastSignature);
+                    updateSignatureStatus();
+                }
+            });
 
             resizeCanvas();
         }
@@ -481,7 +515,13 @@
         }
 
         function setTodaysDate() {
-            document.getElementById('dateSign').value = new Date().toLocaleDateString('en-GB');
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit', 
+                year: 'numeric'
+            });
+            document.getElementById('dateSign').value = formattedDate;
         }
 
         function initializeForm() {

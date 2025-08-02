@@ -164,22 +164,6 @@
                 justify-content: center;
             }
         }
-
-        /* Integration styles for embedding */
-        .widget-embed {
-            background: transparent;
-            border: none;
-            box-shadow: none;
-        }
-
-        .widget-minimal .widget-header {
-            display: none;
-        }
-
-        .widget-minimal .signature-container {
-            margin: 0;
-            border: 2px solid #ddd;
-        }
     </style>
 </head>
 <body>
@@ -218,221 +202,116 @@
     </div>
 
     <script>
-        class SignatureWidget {
-            constructor(containerId, options = {}) {
-                this.container = document.getElementById(containerId);
-                this.canvas = document.getElementById('signatureCanvas');
-                this.placeholder = document.getElementById('placeholder');
-                this.statusIndicator = document.getElementById('statusIndicator');
-                this.statusText = document.getElementById('statusText');
-                this.saveBtn = document.getElementById('saveBtn');
-                this.successMessage = document.getElementById('successMessage');
-                
-                this.options = {
-                    penColor: options.penColor || 'rgb(0, 0, 0)',
-                    backgroundColor: options.backgroundColor || 'rgba(255, 255, 255, 0)',
-                    minWidth: options.minWidth || 0.5,
-                    maxWidth: options.maxWidth || 2.5,
-                    onSave: options.onSave || this.defaultSaveHandler,
-                    apiEndpoint: options.apiEndpoint || null,
-                    ...options
-                };
-                
-                this.init();
-            }
+        let signaturePad;
+        
+        function initializeWidget() {
+            const canvas = document.getElementById('signatureCanvas');
+            const placeholder = document.getElementById('placeholder');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const saveBtn = document.getElementById('saveBtn');
+            const successMessage = document.getElementById('successMessage');
             
-            init() {
-                this.setupSignaturePad();
-                this.setupEventListeners();
-                this.resizeCanvas();
-                
-                // Apply theme if specified
-                if (this.options.minimal) {
-                    this.container.classList.add('widget-minimal');
-                }
-                
-                if (this.options.embed) {
-                    this.container.classList.add('widget-embed');
-                }
-            }
+            // Initialize signature pad
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgba(255, 255, 255, 0)',
+                penColor: 'rgb(0, 0, 0)',
+                velocityFilterWeight: 0.7,
+                minWidth: 0.5,
+                maxWidth: 2.5,
+                throttle: 16,
+                minPointDistance: 3,
+            });
             
-            setupSignaturePad() {
-                this.signaturePad = new SignaturePad(this.canvas, {
-                    backgroundColor: this.options.backgroundColor,
-                    penColor: this.options.penColor,
-                    velocityFilterWeight: 0.7,
-                    minWidth: this.options.minWidth,
-                    maxWidth: this.options.maxWidth,
-                    throttle: 16,
-                    minPointDistance: 3,
-                });
-                
-                // Handle signature events
-                this.signaturePad.addEventListener('beginStroke', () => {
-                    this.placeholder.classList.add('hidden');
-                    this.updateStatus();
-                });
-                
-                this.signaturePad.addEventListener('endStroke', () => {
-                    this.updateStatus();
-                });
-            }
-            
-            setupEventListeners() {
-                window.addEventListener('resize', () => this.resizeCanvas());
-                
-                // Prevent scrolling when signing on mobile
-                this.canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
-                this.canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-                this.canvas.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
-            }
-            
-            resizeCanvas() {
+            // Resize canvas
+            function resizeCanvas() {
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                const rect = this.canvas.getBoundingClientRect();
-                
-                this.canvas.width = rect.width * ratio;
-                this.canvas.height = rect.height * ratio;
-                this.canvas.getContext('2d').scale(ratio, ratio);
-                
-                this.signaturePad.clear();
-                this.updateStatus();
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * ratio;
+                canvas.height = rect.height * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+                signaturePad.clear();
+                updateStatus();
             }
             
-            updateStatus() {
-                const isEmpty = this.signaturePad.isEmpty();
+            // Update status
+            function updateStatus() {
+                const isEmpty = signaturePad.isEmpty();
                 
                 if (isEmpty) {
-                    this.statusIndicator.classList.remove('signed');
-                    this.statusText.textContent = 'Not signed';
-                    this.saveBtn.disabled = true;
-                    this.placeholder.classList.remove('hidden');
+                    statusIndicator.classList.remove('signed');
+                    statusText.textContent = 'Not signed';
+                    saveBtn.disabled = true;
+                    placeholder.classList.remove('hidden');
                 } else {
-                    this.statusIndicator.classList.add('signed');
-                    this.statusText.textContent = 'Ready to save';
-                    this.saveBtn.disabled = false;
+                    statusIndicator.classList.add('signed');
+                    statusText.textContent = 'Ready to save';
+                    saveBtn.disabled = false;
                 }
             }
             
-            clear() {
-                this.signaturePad.clear();
-                this.updateStatus();
-                this.hideSuccessMessage();
-            }
+            // Event listeners
+            signaturePad.addEventListener('beginStroke', () => {
+                placeholder.classList.add('hidden');
+                updateStatus();
+            });
             
-            async save() {
-                if (this.signaturePad.isEmpty()) {
+            signaturePad.addEventListener('endStroke', () => {
+                updateStatus();
+            });
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            // Touch event prevention for mobile
+            canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+            canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+            canvas.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+            
+            // Global functions
+            window.clearSignature = function() {
+                signaturePad.clear();
+                updateStatus();
+                successMessage.style.display = 'none';
+            };
+            
+            window.saveSignature = function() {
+                if (signaturePad.isEmpty()) {
                     alert('Please provide a signature before saving.');
                     return;
                 }
                 
-                // Generate a unique signature ID
+                // Generate signature ID
                 const signatureId = 'SIG-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
                 
-                // Create signature data
-                const signatureData = {
-                    id: signatureId,
-                    dataUrl: this.signaturePad.toDataURL(),
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent
-                };
-                
-                // Update UI immediately (no API calls that can fail)
-                this.saveBtn.disabled = true;
-                this.saveBtn.textContent = 'Saved!';
-                
-                // Show success with signature ID
-                this.successMessage.innerHTML = `
+                // Show success immediately
+                successMessage.innerHTML = `
                     ✅ Signature saved successfully!<br>
                     <strong>Your signature ID: ${signatureId}</strong><br>
                     <small>Please copy this ID for your petition form</small>
                 `;
-                this.successMessage.style.display = 'block';
+                successMessage.style.display = 'block';
                 
-                this.statusText.textContent = 'Signature saved';
-                
-                // Store locally if possible (but don't throw errors if it fails)
-                try {
-                    const existingSignatures = JSON.parse(localStorage.getItem('signatures') || '[]');
-                    existingSignatures.push(signatureData);
-                    localStorage.setItem('signatures', JSON.stringify(existingSignatures));
-                } catch (e) {
-                    // Ignore localStorage errors
-                    console.log('Signature saved (localStorage not available)');
-                }
+                // Update button and status
+                saveBtn.textContent = 'Saved!';
+                saveBtn.disabled = true;
+                statusText.textContent = 'Signature saved';
                 
                 // Log for debugging
                 console.log('Signature saved with ID:', signatureId);
+                console.log('Signature data:', signaturePad.toDataURL());
                 
-                // No API calls = no errors!
-                return signatureData;
-            }
-            
-            async defaultSaveHandler(signatureData) {
-                // This method is no longer used since save() handles everything directly
-                // Keeping it for backward compatibility
-                return signatureData;
-            }
-            
-            showSuccessMessage() {
-                this.successMessage.style.display = 'block';
                 // Auto-hide success message after 10 seconds
-                setTimeout(() => this.hideSuccessMessage(), 10000);
-            }
-            
-            hideSuccessMessage() {
-                this.successMessage.style.display = 'none';
-            }
-            
-            // Public API methods
-            getSignature() {
-                return this.signaturePad.isEmpty() ? null : this.signaturePad.toDataURL();
-            }
-            
-            setSignature(dataUrl) {
-                this.signaturePad.fromDataURL(dataUrl);
-                this.updateStatus();
-            }
-            
-            isEmpty() {
-                return this.signaturePad.isEmpty();
-            }
-        }
-        
-        // Global functions for backward compatibility
-        function clearSignature() {
-            window.signatureWidget.clear();
-        }
-        
-        function saveSignature() {
-            window.signatureWidget.save();
-        }
-        
-        // Initialize the widget
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get configuration from URL parameters or data attributes
-            const urlParams = new URLSearchParams(window.location.search);
-            const widgetElement = document.getElementById('signatureWidget');
-            
-            const options = {
-                minimal: urlParams.get('minimal') === 'true' || widgetElement.dataset.minimal === 'true',
-                embed: urlParams.get('embed') === 'true' || widgetElement.dataset.embed === 'true',
-                penColor: urlParams.get('penColor') || widgetElement.dataset.penColor || 'rgb(0, 0, 0)',
-                apiEndpoint: urlParams.get('apiEndpoint') || widgetElement.dataset.apiEndpoint,
-                onSave: window.customSaveHandler || undefined
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    saveBtn.textContent = 'Save Signature';
+                    saveBtn.disabled = false;
+                }, 10000);
             };
-            
-            window.signatureWidget = new SignatureWidget('signatureWidget', options);
-        });
-        
-        // Export for use in other contexts
-        if (typeof module !== 'undefined' && module.exports) {
-            module.exports = SignatureWidget;
         }
         
-        if (typeof window !== 'undefined') {
-            window.SignatureWidget = SignatureWidget;
-        }
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeWidget);
     </script>
 </body>
 </html>

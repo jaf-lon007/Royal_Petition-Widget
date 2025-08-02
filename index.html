@@ -274,6 +274,28 @@
             color: #1e40af;
             font-size: 14px;
         }
+
+        .data-protection-notice {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .data-protection-notice h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .data-protection-notice p {
+            margin: 0;
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -321,9 +343,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="householdSize">Number of people in household (if a resident)</label>
+                        <label class="form-label" for="householdSize">Number of People in Household (if applicable)</label>
                         <select id="householdSize" name="householdSize" class="form-select">
-                            <option value="">Not Applicable</option>
+                            <option value="">Please select...</option>
+                            <option value="Not Applicable">Not Applicable</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -370,6 +393,11 @@
                 <button type="submit" class="btn btn-primary" id="submitBtn">
                     Sign Petition
                 </button>
+
+                <div class="data-protection-notice">
+                    <h3>Data Protection Note</h3>
+                    <p>All personal information collected for this petition will be used solely to present these concerns to the above-listed parties. Your details will not be shared with third parties or used for any other purpose. You may request the removal of your information at any time.</p>
+                </div>
             </form>
 
             <div class="success-message" id="successMessage">
@@ -474,7 +502,7 @@
                     residentType: document.getElementById('residentType').value,
                     address: document.getElementById('address').value,
                     email: document.getElementById('email').value,
-                    householdSize: document.getElementById('householdSize').value || 'Not Applicable',
+                    householdSize: document.getElementById('householdSize').value || 'Please select...',
                     signature: signaturePad.toDataURL(),
                     dateSign: document.getElementById('dateSign').value,
                     comments: document.getElementById('comments').value,

@@ -343,8 +343,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="householdSize">Number of People in Household (if applicable)</label>
-                        <select id="householdSize" name="householdSize" class="form-select">
+                        <label class="form-label" for="householdSize">Number of People in Household (if applicable) <span class="required">*</span></label>
+                        <select id="householdSize" name="householdSize" class="form-select" required>
                             <option value="">Please select...</option>
                             <option value="Not Applicable">Not Applicable</option>
                             <option value="1">1</option>
@@ -542,7 +542,7 @@
                     residentType: document.getElementById('residentType').value,
                     address: document.getElementById('address').value,
                     email: document.getElementById('email').value,
-                    householdSize: document.getElementById('householdSize').value || 'Please select...',
+                    householdSize: document.getElementById('householdSize').value,
                     signature: signaturePad.toDataURL(),
                     dateSign: document.getElementById('dateSign').value,
                     comments: document.getElementById('comments').value,
@@ -580,7 +580,7 @@
 
             // Submit to Google Apps Script
             // REPLACE 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual deployed script URL
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxoOky_wFOv0362nJlyZZpYHpj7ZZK7lRCG3Aay7Znuq8V2JSWHzIgEEU_I6AXSs8Kp/exec';
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCav735jKF_hH4csT6Qq5ppgSiSXGf-ZaeHis0GZVVadysdnTuwFN6eRBbaLVDsEkf/exec';
             
             console.log('Submitting to:', scriptUrl);
             console.log('Petition data:', petitionData);

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Petition - Royal's Should Respect Residents</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/emailjs/2.6.4/email.min.js"></script>
@@ -236,11 +236,12 @@
             }
             
             .petition-header {
-                padding: 30px 20px;
+                padding: 20px 15px;
             }
             
             .petition-title {
-                font-size: 26px;
+                font-size: 24px;
+                line-height: 1.3;
             }
             
             .petition-subtitle {
@@ -248,17 +249,81 @@
             }
             
             .petition-content {
-                padding: 30px 20px;
+                padding: 20px 15px;
             }
             
             .grid-2 {
                 grid-template-columns: 1fr;
+            }
+            
+            .signature-canvas {
+                height: 150px; /* Shorter on mobile */
+            }
+            
+            .form-input, .form-select, .form-textarea {
+                font-size: 16px; /* Prevents zoom on iOS */
+                padding: 12px;
+            }
+            
+            .btn-primary {
+                font-size: 16px;
+                padding: 14px 24px;
+            }
+            
+            .signature-controls {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .info-box {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .petition-title {
+                font-size: 20px;
+            }
+            
+            .petition-subtitle {
+                font-size: 14px;
+            }
+            
+            .petition-content {
+                padding: 15px 10px;
+            }
+            
+            .signature-canvas {
+                height: 120px; /* Even shorter on small phones */
+            }
+            
+            .form-input, .form-select, .form-textarea {
+                padding: 10px;
             }
         }
 
         .date-field {
             background: #f8f9fb;
             color: #64748b;
+        }
+        
+        .mobile-device .signature-placeholder {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .mobile-device .signature-container {
+            border: 3px dashed #667eea;
+            background: #f8f9fb;
+        }
+        
+        .mobile-device .form-input:focus, 
+        .mobile-device .form-select:focus, 
+        .mobile-device .form-textarea:focus {
+            transform: none; /* Prevent zoom-like effects */
         }
 
         .info-box {
@@ -359,7 +424,8 @@
                 <div class="signature-section">
                     <label class="form-label">Digital Signature <span class="required">*</span></label>
                     <p style="margin: 5px 0 15px 0; color: #64748b; font-size: 14px;">
-                        Please sign below using your mouse, finger, or stylus
+                        <span class="desktop-text">Please sign below using your mouse, finger, or stylus</span>
+                        <span class="mobile-text" style="display: none;">Use your finger to sign in the box below</span>
                     </p>
                     
                     <div class="signature-container">
@@ -419,7 +485,31 @@
             initializeSignature();
             initializeForm();
             setTodaysDate();
+            checkMobileDevice();
         });
+
+        function checkMobileDevice() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Show mobile-specific text
+                const mobileText = document.querySelector('.mobile-text');
+                const desktopText = document.querySelector('.desktop-text');
+                if (mobileText && desktopText) {
+                    mobileText.style.display = 'inline';
+                    desktopText.style.display = 'none';
+                }
+                
+                // Add mobile class to body for additional styling
+                document.body.classList.add('mobile-device');
+                
+                // Adjust signature placeholder for mobile
+                const placeholder = document.getElementById('signaturePlaceholder');
+                if (placeholder) {
+                    placeholder.innerHTML = '👆 Tap here to start signing';
+                }
+            }
+        }
 
         function initializeSignature() {
             const canvas = document.getElementById('signatureCanvas');

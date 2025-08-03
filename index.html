@@ -322,12 +322,12 @@
                     <label class="form-label" for="residentType">Resident Type <span class="required">*</span></label>
                     <select id="residentType" name="residentType" class="form-select" required>
                         <option value="">Please select...</option>
-                        <option value="hermitage-resident-freeholder">Hermitage Court - Resident (Share-of-Freeholder)</option>
-                        <option value="hermitage-nonresident-freeholder">Hermitage Court - Non-Resident (Share-of-Freeholder)</option>
-                        <option value="hermitage-tenant">Hermitage Court - Tenant</option>
-                        <option value="hermitage-other">Hermitage Court - Other Resident</option>
-                        <option value="hermitage-commercial">Hermitage Court - Commercial Leaseholder</option>
+                        <option value="hermitage-owner-resident">Hermitage Court: Owner - Resident</option>
+                        <option value="hermitage-owner-nonresident">Hermitage Court: Owner - Non-Resident</option>
+                        <option value="hermitage-tenant">Hermitage Court: Tenant</option>
+                        <option value="hermitage-commercial">Hermitage Court: Commercial - Leaseholder, employee, etc</option>
                         <option value="local-resident">Local Resident (Neighbour)</option>
+                        <option value="other-interested">Other Interested Party</option>
                     </select>
                 </div>
 
@@ -580,7 +580,7 @@
 
             // Submit to Google Apps Script
             // REPLACE 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual deployed script URL
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxqUStZGkfqS2dAsDVW4qSq1eYFYXBN1EBPeCR_lqfbgGSUFvAu6SDjUb858XFOOMC6/exec';
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbw2HEF00t5bnyZutME5XLihUdkEUm3LXr_kcx8rlrWqf1WQCpv9sjOsgoNFyUTKR5a2/exec';
             
             console.log('Submitting to:', scriptUrl);
             console.log('Petition data:', petitionData);
@@ -626,4 +626,3 @@
     </script>
 </body>
 </html>
-

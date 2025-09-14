@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Petition - Royal's Should Respect Residents</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/emailjs/2.6.4/email.min.js"></script>
+    <title>Petition Closed - Royal's Should Respect Residents</title>
     <style>
         * {
             box-sizing: border-box;
@@ -19,793 +17,259 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             width: 100%;
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-x: hidden;
         }
 
-        .petition-container {
+        .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             overflow: hidden;
-            width: 100%; /* Ensure it fits container */
+            width: 100%;
         }
 
-        .petition-header {
+        .header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             padding: 40px 30px;
             text-align: center;
         }
 
-        .petition-title {
+        .title {
             font-size: 32px;
             font-weight: 700;
             margin: 0 0 15px 0;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .petition-subtitle {
+        .subtitle {
             font-size: 18px;
             font-style: italic;
             opacity: 0.95;
             margin: 0;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
-        .petition-content {
+        .content {
             padding: 40px 30px;
         }
 
-        .petition-form {
-            display: grid;
-            gap: 25px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .required {
-            color: #e74c3c;
-        }
-
-        .form-input, .form-select, .form-textarea {
-            padding: 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .signature-section {
-            background: #f8f9fb;
-            border-radius: 12px;
-            padding: 25px;
-            border: 2px dashed #d1d9e6;
-        }
-
-        .signature-container {
-            position: relative;
-            background: white;
-            border: 2px solid #e1e8ed;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-
-        .signature-canvas {
-            width: 100%;
-            height: 200px;
-            display: block;
-            cursor: crosshair;
-        }
-
-        .signature-placeholder {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #94a3b8;
-            font-size: 18px;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            text-align: center;
-        }
-
-        .signature-placeholder.hidden {
-            opacity: 0;
-        }
-
-        .signature-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-
-        .signature-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ef4444;
-            transition: background-color 0.3s ease;
-        }
-
-        .status-dot.signed {
-            background: #22c55e;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-        }
-
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-size: 18px;
-            padding: 16px 32px;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .success-message {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        .status-banner {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
             padding: 20px;
             border-radius: 12px;
-            margin-top: 20px;
-            display: none;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .thank-you-section {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
             text-align: center;
         }
 
-        .success-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        .thank-you-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #155724;
+            margin: 0 0 15px 0;
         }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .thank-you-text {
+            font-size: 18px;
+            color: #155724;
+            margin: 15px 0;
+        }
+
+        .info-section {
+            background: #f8f9fb;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .info-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0 0 15px 0;
+        }
+
+        .info-text {
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .contact-section {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .contact-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1565c0;
+            margin: 0 0 15px 0;
+        }
+
+        .email-link {
+            font-size: 18px;
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .email-link:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+        }
+
+        .next-steps {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .next-steps-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #856404;
+            margin: 0 0 15px 0;
+        }
+
+        .next-steps-text {
+            color: #856404;
         }
 
         @media (max-width: 768px) {
-            * {
-                max-width: 100% !important;
-                box-sizing: border-box !important;
-            }
-            
             body {
-                padding: 2px !important;
-                margin: 0 !important;
-                width: 100vw !important;
-                overflow-x: hidden !important;
+                padding: 10px;
             }
             
-            .petition-container {
-                max-width: none !important;
-                width: calc(100vw - 4px) !important;
-                margin: 0 !important;
-                border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            .header {
+                padding: 30px 20px;
             }
             
-            .petition-header {
-                padding: 15px 10px !important;
-                width: 100% !important;
+            .title {
+                font-size: 26px;
             }
             
-            .petition-title {
-                font-size: 22px !important;
-                line-height: 1.3;
-                word-wrap: break-word;
-                margin: 0 !important;
+            .subtitle {
+                font-size: 16px;
             }
             
-            .petition-subtitle {
-                font-size: 15px !important;
-                line-height: 1.4;
-                margin: 5px 0 0 0 !important;
+            .content {
+                padding: 30px 20px;
             }
             
-            .petition-content {
-                padding: 15px 10px !important;
-                width: 100% !important;
+            .thank-you-title {
+                font-size: 24px;
             }
             
-            .petition-form {
-                width: 100% !important;
-            }
-            
-            .form-group {
-                width: 100% !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .grid-2 {
-                grid-template-columns: 1fr !important;
-                gap: 15px;
-                width: 100% !important;
-            }
-            
-            .signature-canvas {
-                height: 140px !important;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            
-            .signature-container {
-                margin: 10px 0 !important;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            
-            .signature-section {
-                width: 100% !important;
-                padding: 15px 10px !important;
-                margin: 0 !important;
-            }
-            
-            .form-input, .form-select, .form-textarea {
-                font-size: 16px !important;
-                padding: 10px !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                border: 2px solid #e1e8ed !important;
-                margin: 0 !important;
-            }
-            
-            .btn-primary {
-                font-size: 16px !important;
-                padding: 14px 20px !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 15px 0 !important;
-            }
-            
-            .signature-controls {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-                padding: 8px !important;
-                width: 100% !important;
-            }
-            
-            .info-box {
-                font-size: 14px !important;
-                padding: 10px !important;
-                margin: 10px 0 !important;
-                width: 100% !important;
-            }
-            
-            .data-protection-notice {
-                padding: 12px 8px !important;
-                margin: 10px 0 !important;
-                font-size: 13px !important;
-                width: 100% !important;
-            }
-            
-            .success-message {
-                margin: 10px 0 !important;
-                padding: 15px 10px !important;
-                width: 100% !important;
+            .thank-you-text {
+                font-size: 16px;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                padding: 2px;
+                padding: 5px;
             }
             
-            .petition-container {
-                border-radius: 4px;
+            .container {
+                border-radius: 8px;
             }
             
-            .petition-title {
-                font-size: 20px;
+            .header {
+                padding: 25px 15px;
             }
             
-            .petition-subtitle {
-                font-size: 14px;
+            .title {
+                font-size: 22px;
             }
             
-            .petition-content {
-                padding: 15px 10px;
+            .content {
+                padding: 25px 15px;
             }
-            
-            .signature-canvas {
-                height: 120px;
-            }
-            
-            .form-input, .form-select, .form-textarea {
-                padding: 10px;
-                font-size: 16px;
-            }
-            
-            .petition-header {
-                padding: 15px 10px;
-            }
-        }
-
-        .date-field {
-            background: #f8f9fb;
-            color: #64748b;
-        }
-        
-        .mobile-device .signature-placeholder {
-            font-size: 16px;
-            color: #667eea;
-            font-weight: 500;
-        }
-        
-        .mobile-device .signature-container {
-            border: 3px dashed #667eea;
-            background: #f8f9fb;
-        }
-        
-        .mobile-device .form-input:focus, 
-        .mobile-device .form-select:focus, 
-        .mobile-device .form-textarea:focus {
-            transform: none; /* Prevent zoom-like effects */
-        }
-
-        .info-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .info-box p {
-            margin: 0;
-            color: #1e40af;
-            font-size: 14px;
-        }
-
-        .data-protection-notice {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 25px;
-        }
-
-        .data-protection-notice h3 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .data-protection-notice p {
-            margin: 0;
-            font-size: 14px;
-            color: #6c757d;
-            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <div class="petition-container">
-        <div class="petition-header">
-            <h1 class="petition-title">Petition - Royal's Should Respect Residents</h1>
-            <p class="petition-subtitle">
-                This petition is supported by residents from Hermitage Court and other nearby properties in Wapping who are affected by the ongoing disruption, fumes, noise and safety concerns caused by Royal Dry Cleaners' operations.
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Petition - Royal's Should Respect Residents</h1>
+            <p class="subtitle">
+                Hermitage Court and Local Residents' Concerns
             </p>
         </div>
 
-        <div class="petition-content">
-            <div class="info-box">
-                <p><strong>📧 How it works:</strong> When you sign this petition, your signature and details will be automatically emailed to the petition organiser for compilation and submission to the relevant authorities.</p>
-                <p><strong>📋 Full petition details:</strong> <a href="https://github.com/jaf-lon007/Royal_Petition-Widget/raw/main/RoyalDryCleaners_Petition_HC_2025.pdf" target="_blank" style="color: #1e40af; text-decoration: underline;">Read the petition document (PDF)</a> to understand all the issues and evidence regarding Royal Dry Cleaners.</p>
+        <div class="content">
+            <div class="status-banner">
+                PETITION NOW CLOSED
             </div>
 
-            <form class="petition-form" id="petitionForm">
-                <div class="form-group">
-                    <label class="form-label" for="fullName">Name <span class="required">*</span></label>
-                    <input type="text" id="fullName" name="fullName" class="form-input" required>
-                </div>
+            <div class="thank-you-section">
+                <h2 class="thank-you-title">Thank You to All Supporters</h2>
+                <p class="thank-you-text">
+                    We are deeply grateful to everyone who signed this petition and supported our efforts to address the ongoing issues with Royal Dry Cleaners.
+                </p>
+                <p class="thank-you-text">
+                    Your participation demonstrates the strength of our community and our commitment to finding a resolution to these concerns.
+                </p>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="residentType">Resident Type <span class="required">*</span></label>
-                    <select id="residentType" name="residentType" class="form-select" required>
-                        <option value="">Please select...</option>
-                        <option value="hermitage-owner-resident">Hermitage Court: Owner - Resident</option>
-                        <option value="hermitage-owner-nonresident">Hermitage Court: Owner - Non-Resident</option>
-                        <option value="hermitage-tenant">Hermitage Court: Tenant</option>
-                        <option value="hermitage-commercial">Hermitage Court: Commercial - Leaseholder, employee, etc.</option>
-                        <option value="local-resident">Local Resident (Neighbour)</option>
-                        <option value="other-interested">Other Interested Party</option>
-                    </select>
-                </div>
+            <div class="info-section">
+                <h3 class="info-title">Petition Summary</h3>
+                <p class="info-text">
+                    This petition highlighted the ongoing disruption, fumes, noise and safety concerns caused by Royal Dry Cleaners' operations affecting residents of Hermitage Court and nearby properties in Wapping.
+                </p>
+                <p class="info-text">
+                    The petition and supporting documentation have been compiled and will be submitted to the relevant authorities for consideration.
+                </p>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="address">Address <span class="required">*</span></label>
-                    <textarea id="address" name="address" class="form-textarea" rows="3" required placeholder="Please enter your full address"></textarea>
-                </div>
+            <div class="next-steps">
+                <h3 class="next-steps-title">What Happens Next</h3>
+                <p class="next-steps-text">
+                    The petition, along with all signatures and supporting evidence, will be formally submitted to the appropriate authorities. We will continue to pursue this matter through the proper channels and keep supporters informed of any developments.
+                </p>
+            </div>
 
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label" for="email">Email Address <span class="required">*</span></label>
-                        <input type="email" id="email" name="email" class="form-input" required>
-                    </div>
+            <div class="contact-section">
+                <h3 class="contact-title">Further Information</h3>
+                <p class="info-text">
+                    If you have any questions about the petition or would like updates on progress, please feel free to contact:
+                </p>
+                <a href="mailto:hc.royalpetition@outlook.com" class="email-link">
+                    hc.royalpetition@outlook.com
+                </a>
+            </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="householdSize">Number of People in Household (if applicable) <span class="required">*</span></label>
-                        <select id="householdSize" name="householdSize" class="form-select" required>
-                            <option value="">Please select...</option>
-                            <option value="Not Applicable">Not Applicable</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5+">5+</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="signature-section">
-                    <label class="form-label">Digital Signature <span class="required">*</span></label>
-                    <p style="margin: 5px 0 15px 0; color: #64748b; font-size: 14px;">
-                        <span class="desktop-text">Please sign below using your mouse, finger, or stylus</span>
-                        <span class="mobile-text" style="display: none;">Use your finger to sign in the box below</span>
-                    </p>
-                    
-                    <div class="signature-container">
-                        <canvas class="signature-canvas" id="signatureCanvas"></canvas>
-                        <div class="signature-placeholder" id="signaturePlaceholder">
-                            ✍️ Click here to start signing
-                        </div>
-                    </div>
-
-                    <div class="signature-controls">
-                        <div class="signature-status">
-                            <div class="status-dot" id="statusDot"></div>
-                            <span id="statusText">Not signed</span>
-                        </div>
-                        <button type="button" class="btn btn-secondary" onclick="clearSignature()">
-                            Clear Signature
-                        </button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="dateSign">Date Signed</label>
-                    <input type="text" id="dateSign" name="dateSign" class="form-input date-field" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="comments">Any Comments or Specific Concerns?</label>
-                    <textarea id="comments" name="comments" class="form-textarea" rows="4" placeholder="Please share any specific concerns or comments about the issues with Royal Dry Cleaners..."></textarea>
-                </div>
-
-                <div class="info-box" style="margin-bottom: 20px;">
-                    <p><strong>ℹ️ Submission Process:</strong> After clicking "Sign Petition", please wait 10-15 seconds while your signature is processed and securely stored. Do not refresh or navigate away during this time.</p>
-                </div>
-
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                    Sign Petition
-                </button>
-
-                <div class="data-protection-notice">
-                    <h3>Data Protection Note</h3>
-                    <p>All personal information collected for this petition will be used solely to present these concerns to the above-listed parties. Your details will not be shared with third parties or used for any other purpose. You may request the removal of your information at any time.</p>
-                </div>
-            </form>
-
-            <div class="success-message" id="successMessage">
-                <div class="success-title">Thank You for Signing!</div>
-                <p>Your petition signature has been successfully submitted and emailed to the organiser.</p>
+            <div class="info-section">
+                <p class="info-text" style="text-align: center; font-style: italic; color: #666;">
+                    Thank you once again for your support and participation in this important community matter.
+                </p>
             </div>
         </div>
     </div>
-
-    <script>
-        let signaturePad;
-        
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSignature();
-            initializeForm();
-            setTodaysDate();
-            checkMobileDevice();
-        });
-
-        function checkMobileDevice() {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-            
-            if (isMobile) {
-                // Show mobile-specific text
-                const mobileText = document.querySelector('.mobile-text');
-                const desktopText = document.querySelector('.desktop-text');
-                if (mobileText && desktopText) {
-                    mobileText.style.display = 'inline';
-                    desktopText.style.display = 'none';
-                }
-                
-                // Add mobile class to body for additional styling
-                document.body.classList.add('mobile-device');
-                
-                // Adjust signature placeholder for mobile
-                const placeholder = document.getElementById('signaturePlaceholder');
-                if (placeholder) {
-                    placeholder.innerHTML = '👆 Tap here to start signing';
-                }
-            }
-        }
-
-        function initializeSignature() {
-            const canvas = document.getElementById('signatureCanvas');
-            const placeholder = document.getElementById('signaturePlaceholder');
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-
-            // Initialize signature pad
-            signaturePad = new SignaturePad(canvas, {
-                backgroundColor: 'rgba(255, 255, 255, 0)',
-                penColor: 'rgb(0, 0, 0)',
-                velocityFilterWeight: 0.7,
-                minWidth: 0.5,
-                maxWidth: 2.5,
-                throttle: 16,
-                minPointDistance: 3,
-            });
-
-            // Resize canvas
-            function resizeCanvas() {
-                const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                const rect = canvas.getBoundingClientRect();
-                
-                // Save current signature data before resizing
-                const signatureData = signaturePad.toDataURL();
-                const wasEmpty = signaturePad.isEmpty();
-                
-                canvas.width = rect.width * ratio;
-                canvas.height = rect.height * ratio;
-                canvas.getContext('2d').scale(ratio, ratio);
-                
-                // Restore signature after resize if it wasn't empty
-                if (!wasEmpty) {
-                    signaturePad.fromDataURL(signatureData);
-                } else {
-                    signaturePad.clear();
-                }
-                
-                updateSignatureStatus();
-            }
-
-            // Update signature status
-            function updateSignatureStatus() {
-                const isEmpty = signaturePad.isEmpty();
-                
-                if (isEmpty) {
-                    statusDot.classList.remove('signed');
-                    statusText.textContent = 'Not signed';
-                    placeholder.classList.remove('hidden');
-                } else {
-                    statusDot.classList.add('signed');
-                    statusText.textContent = 'Signature ready';
-                    placeholder.classList.add('hidden');
-                }
-            }
-
-            // Event listeners
-            signaturePad.addEventListener('beginStroke', updateSignatureStatus);
-            signaturePad.addEventListener('endStroke', updateSignatureStatus);
-            
-            // Debounced resize to prevent too many calls
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(resizeCanvas, 250);
-            });
-            
-            // Prevent scrolling issues on mobile
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                // Store signature before potential layout changes
-                window.lastSignature = signaturePad.isEmpty() ? null : signaturePad.toDataURL();
-            }, { passive: false });
-            
-            canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-            canvas.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                updateSignatureStatus();
-            }, { passive: false });
-            
-            // Handle visibility changes (when user switches tabs/apps)
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden && window.lastSignature && signaturePad.isEmpty()) {
-                    signaturePad.fromDataURL(window.lastSignature);
-                    updateSignatureStatus();
-                }
-            });
-
-            resizeCanvas();
-        }
-
-        function clearSignature() {
-            signaturePad.clear();
-            document.getElementById('statusDot').classList.remove('signed');
-            document.getElementById('statusText').textContent = 'Not signed';
-            document.getElementById('signaturePlaceholder').classList.remove('hidden');
-        }
-
-        function setTodaysDate() {
-            const today = new Date();
-            const formattedDate = today.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: '2-digit', 
-                year: 'numeric'
-            });
-            document.getElementById('dateSign').value = formattedDate;
-        }
-
-        function initializeForm() {
-            const form = document.getElementById('petitionForm');
-            
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Validate signature
-                if (signaturePad.isEmpty()) {
-                    alert('Please provide your signature before submitting the petition.');
-                    return;
-                }
-
-                // Get form data
-                const formData = {
-                    fullName: document.getElementById('fullName').value,
-                    residentType: document.getElementById('residentType').value,
-                    address: document.getElementById('address').value,
-                    email: document.getElementById('email').value,
-                    householdSize: document.getElementById('householdSize').value,
-                    signature: signaturePad.toDataURL(),
-                    dateSign: document.getElementById('dateSign').value,
-                    comments: document.getElementById('comments').value,
-                    timestamp: new Date().toISOString()
-                };
-
-                submitPetition(formData);
-            });
-        }
-
-        function submitPetition(formData) {
-            const submitBtn = document.getElementById('submitBtn');
-            const successMessage = document.getElementById('successMessage');
-            
-            // Update button state
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-
-            // Generate unique ID
-            const petitionId = 'PET-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-            
-            // Prepare data for Google Apps Script
-            const petitionData = {
-                petitionId: petitionId,
-                fullName: formData.fullName,
-                residentType: formData.residentType,
-                address: formData.address,
-                email: formData.email,
-                householdSize: formData.householdSize,
-                signature: formData.signature,
-                dateSign: formData.dateSign,
-                comments: formData.comments || '',
-                timestamp: new Date().toLocaleString('en-GB')
-            };
-
-            // Submit to Google Apps Script
-            // REPLACE 'YOUR_GOOGLE_APPS_SCRIPT_URL' with your actual deployed script URL
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycby13OcjLJKCoSNjM5TUtNBN3MOoSKBsHgiErcb1rYHVCfyygYnrOvma3EHbSmn6EJar/exec';
-            
-            console.log('Submitting to:', scriptUrl);
-            console.log('Petition data:', petitionData);
-            
-            fetch(scriptUrl, {
-                method: 'POST',
-                mode: 'no-cors',  // This bypasses CORS issues
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(petitionData)
-            })
-            .then(response => {
-                // With no-cors mode, we can't read the response, so assume success
-                console.log('Request sent successfully');
-                
-                // Show success message
-                successMessage.innerHTML = `
-                    <div class="success-title">Thank You for Signing!</div>
-                    <p>Your petition signature has been submitted and emailed to the organiser.</p>
-                    <p><strong>Petition ID:</strong> ${petitionId}</p>
-                `;
-                successMessage.style.display = 'block';
-                successMessage.scrollIntoView({ behavior: 'smooth' });
-                
-                // Reset form
-                document.getElementById('petitionForm').reset();
-                clearSignature();
-                setTodaysDate();
-                
-                console.log('Petition signed successfully with ID:', petitionId);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('There was an error submitting your petition. Please try again or contact support.');
-            })
-            .finally(() => {
-                // Reset button
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Sign Petition';
-            });
-        }
-    </script>
 </body>
 </html>
-
